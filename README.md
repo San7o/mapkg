@@ -57,6 +57,7 @@ Each map contains a makefile with the following informations
 about a specific package:
 
 - list of dependencies
+- download instructions
 - installation instructions
 - uninstallation instructions
 - instructions to install documentation (man pages)

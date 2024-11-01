@@ -22,7 +22,7 @@
 # Current version of the script
 VERSION="0.1.0"
 # Dependencies needed to run this script
-BASE_DEPENDENCIES="make"
+BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch"
 # Default mapkg directory
 MAPKG_DIR="/opt/mapkg"
 
@@ -143,7 +143,7 @@ is_package_installed() {
 # - $1: The package to install
 # - $2: The optional version of the package to install
 # Return: None
-# Exit code: 1 if the package is not found
+# Exit code: 1 if the package is not found or the build fails
 install() {
 	if [ -z "$1" ]; then
 		print_error "No package specified"
@@ -177,9 +177,22 @@ install() {
 
 	echo "Found map in $map_dir"
 
-	# TODO: Install the package
+    if [ ! -f "$map_dir/map.sh" ]; then
+        print_error "The build script for $1 was not found in $map_dir"
+        exit 1
+    fi
 
-	echo "$1 $(basename $map_dir)" >>"$MAPKG_DIR/installed"
+    # Run the download script
+    "$map_dir/map.sh" download
+
+    # Run the build script
+    "$map_dir/map.sh" build
+
+    # Run the install script
+    "$map_dir/map.sh" install
+
+    # Save the installed package
+	echo "$1 $(basename "$map_dir")" >>"$MAPKG_DIR/installed"
 }
 
 remove() {
@@ -191,6 +204,8 @@ remove() {
 update() {
 	assert_mapkg_dir
 	echo "Updating"
+    # TODO: Pull from git
+    # TODO: Set all maps as executable
 }
 
 upgrade() {
@@ -199,10 +214,12 @@ upgrade() {
 	# TODO
 }
 
+# Function: list
+# Description: List all the installed packages
 list() {
 	assert_mapkg_dir
 	echo "Installed packages:"
-	# TODO
+    cat "$MAPKG_DIR/installed"
 }
 
 # Function: print_version
