@@ -88,7 +88,33 @@ assert_mapkg_dir() {
 	fi
 }
 
+search() {
+        if [ -z "$1" ]; then
+            print_error "No package specified"
+            exit 1
+        fi
+
+        echo "Searching for $1"
+        assert_mapkg_dir
+
+        map_dirs="$(find "$MAPKG_DIR" -type d -name "*$1*")"
+        if [ -z "$map_dirs" ]; then
+            print_error "The map for $1 was not found in $MAPKG_DIR"
+            exit 1
+        fi
+
+        echo "Found maps:"
+        echo "$map_dirs" | tr ' ' '\n' | while read -r map_dir; do
+        echo "  $(basename $map_dir)"
+        done
+}
+
 install() {
+    if [ -z "$1" ]; then
+        print_error "No package specified"
+        exit 1
+    fi
+
 	echo "Installing: $1"
 	assert_mapkg_dir
 
@@ -145,6 +171,7 @@ print_help() {
 	printf "\n"
 	echo "Options:"
 	echo "    install <package>: Install the specified package[s]"
+    echo "    search  <package>: Search if a package map exists"
 	echo "    remove  <package>: Remove the specified package[s]"
 	echo "    update: Update the package list"
 	echo "    upgrade   <package>: Upgrade the specified package[s]"
@@ -163,6 +190,9 @@ print_help() {
 # Exit code: None
 parse_args() {
 	case $1 in
+    search)
+        search "$2"
+        ;;
 	install)
 		install "$2"
 		;;
@@ -191,7 +221,6 @@ parse_args() {
 main() {
 	check_dependencies "$BASE_DEPENDENCIES"
 	parse_args "$@"
-	echo "Done"
 }
 
 main "$@"

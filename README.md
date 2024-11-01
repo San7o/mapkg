@@ -10,6 +10,7 @@ Usage: ./mapkg.sh [options] [packages]
 
 Options:
     install <package>: Install the specified package[s]
+    search  <package>: Search if a package map exists
     remove  <package>: Remove the specified package[s]
     update: Update the package list
     upgrade   <package>: Upgrade the specified package[s]
