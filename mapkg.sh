@@ -64,7 +64,15 @@ check_dependencies() {
 # Return: None
 # Exit code: 0
 print_help() {
-	echo "Usage: $0 <install|remove|update> <package[s ...]>"
+	echo "Usage: $0 [options] [packages]"
+    echo -e ""
+    echo "Options:"
+    echo "    install <package>: Install the specified package[s]"
+    echo "    remove  <package>: Remove the specified package[s]"
+    echo "    update: Update the package list"
+    echo "    upgrade   <package>: Upgrade the specified package[s]"
+    echo "    help: Print this help message"
+    echo "    version: Print the version of the script"
 	exit 0
 }
 
@@ -81,6 +89,11 @@ remove() {
 update() {
 	echo "Updating $1"
 	# TODO
+}
+
+upgrade() {
+    echo "Upgrading $1"
+    # TODO
 }
 
 # Function: parse_args
@@ -105,6 +118,9 @@ parse_args() {
 	update)
 		echo "Updating $2"
 		;;
+    upgrade)
+        echo "Upgrading $2"
+        ;;
 	*)
 		print_help
 		;;

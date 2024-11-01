@@ -3,7 +3,15 @@
 A Packet manager for *NIX, via a POSIX compliant `sh` shell script.
 
 ```
-Usage: mapkg <install|remove|update> <package[s ...]>
+Usage: ./mapkg.sh [options] [packages]
+
+Options:
+    install <package>: Install the specified package[s]
+    remove  <package>: Remove the specified package[s]
+    update: Update the package list
+    upgrade   <package>: Upgrade the specified package[s]
+    help: Print this help message
+    version: Print the version of the script
 ```
 
 ## Funcitonalities
@@ -12,7 +20,8 @@ mapkg enables you to perform the following operations
 in your system:
 - install a package[s] with Its dependencies
 - uninstall a package[s]
-- update a package[s]
+- update maps
+- upgrade a package[s]
 - list installed packages
 
 ## Installation
@@ -25,7 +34,8 @@ to your path aswell. That's it.
 
 ## Repository structure
 
-All build scripts are saved in a tree structure of [map](./maps)
+All build scripts (that will be referred to as "maps") are sotred in a
+tree structure in [maps](./maps)
 with the following structure:
 
 ```
@@ -59,3 +69,8 @@ about a specific package:
 
 When you want to install a package, the instructions on the
 map are executed and the result is saved in `MAPKG_PATH/bin`.
+
+## Updates
+
+Maps are updated via git by fetching this repository, either
+using a known tag or from master branch.
