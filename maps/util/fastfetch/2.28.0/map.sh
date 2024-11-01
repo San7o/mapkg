@@ -1,7 +1,12 @@
 #! /bin/sh
 
+dependencies() {
+        echo "Dependencies: ..."
+}
+
 download() {
         echo "Downloading..."
+        echo "In directory: $PWD"
 }
 
 build() {
@@ -18,6 +23,9 @@ remove() {
 
 main() {
         case $1 in
+                "dependencies")
+                        dependencies
+                        ;;
                 "download")
                         download
                         ;;

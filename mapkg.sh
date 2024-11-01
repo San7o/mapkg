@@ -8,7 +8,7 @@
 #
 # Date: 2024-11-01
 # License: GPLv3
-# Version: 0.1
+# Version: 0.1.0
 # Author: Giovanni Santini
 #
 # Dependencies:
@@ -182,14 +182,34 @@ install() {
 		exit 1
 	fi
 
+    # Install dependencies
+    dependencies=$($map_dir/map.sh dependencies)
+    echo "Dependencies: $dependencies"
+    # TODO
+
 	# Run the download script
-	"$map_dir/map.sh" download
+    if ! "$map_dir/map.sh" download $MAPKG_DIR; then
+        print_error "The download script for $1 failed"
+        exit 1
+    fi
 
 	# Run the build script
-	"$map_dir/map.sh" build
+    if ! "$map_dir/map.sh" build $MAPKG_DIR; then
+        print_error "The build script for $1 failed"
+        exit 1
+    fi
 
 	# Run the install script
-	"$map_dir/map.sh" install
+    if ! "$map_dir/map.sh" install $MAPKG_DIR; then
+        print_error "The install script for $1 failed"
+        exit 1
+    fi
+
+    # Run the clean script
+    if ! "$map_dir/map.sh" clean $MAPKG_DIR; then
+        print_error "The clean script for $1 failed"
+        exit 1
+    fi
 
 	# Save the installed package
 	echo "$1 $(basename "$map_dir")" >>"$MAPKG_DIR/installed"

@@ -53,14 +53,13 @@ variable or in a default location `/opt/mapkg/maps`.
 
 ## Maps
 
-Each map contains a makefile with the following informations 
-about a specific package:
+Each map contains a build script with the following options:
 
 - list of dependencies
-- download instructions
-- installation instructions
-- uninstallation instructions
-- instructions to install documentation (man pages)
+- download
+- installation
+- remove
+- install documentation (man pages)
 - metadata: description and other things
 
 When you want to install a package, the instructions on the

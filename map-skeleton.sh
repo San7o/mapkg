@@ -1,5 +1,9 @@
 #! /bin/sh
 
+dependencies() {
+        echo "Dependencies: ..."
+}
+
 download() {
         echo "Downloading..."
 }
@@ -18,6 +22,9 @@ remove() {
 
 main() {
         case $1 in
+                "dependencies")
+                        dependencies
+                        ;;
                 "download")
                         download
                         ;;
