@@ -15,12 +15,17 @@
 #  - make
 #
 # Usage:
-# - ./mapkg.sh <install|remove|update> <package[s ...]>
+# - ./mapkg.sh [options] [packages]
 #
 # ======================================================
 
+# Current version of the script
+VERSION="0.1.0"
+
 # Dependencies needed to run this script
 BASE_DEPENDENCIES="make"
+
+MAPKG_DIR="/opt/mapkg"
 
 # Function: print_error
 # Description: Print an error message to the standard error
@@ -36,14 +41,12 @@ print_error() {
 #           and accessible via the PATH
 # Parameters:
 # - $1: The program to check
-# Return: None
-# Exit code: 1 if the program is not installed
-assert_installed() {
+# Return: true if the program is installed, false otherwise
+is_installed() {
 	if ! command -v "$1" >/dev/null 2>&1; then
-		print_error "$1 is not installed. You need to install
-                     it to run this script"
-		exit 1
+        return 1
 	fi
+    return 0
 }
 
 # Function: check_dependencies
@@ -54,8 +57,74 @@ assert_installed() {
 # Exit code: 1 if a dependency is not installed
 check_dependencies() {
 	echo "$1" | tr ' ' '\n' | while read -r dep; do
-		assert_installed "$dep"
+    if ! is_installed "$dep"; then
+            print_error "$dep is not installed. Please install it before running this script."
+            exit 1
+        fi
 	done
+}
+
+# Function: set_mapkg_dir
+# Description: Updates the mapkg directory if the
+#       MAPKG_PATH variable is set
+# Parameters: None
+# Return: None
+# Exit code: None
+update_mapkg_dir() {
+    if [ ! -z "$MAPKG_PATH" ]; then
+        MAPKG_DIR="$MAPKG_PATH"
+    fi
+}
+
+# Function: check_mapkg_dir
+# Description: Check if the mapkg directory exists
+# Parameters: None
+# Return: None
+# Exit code: 1 if the mapkg directory does not exist
+check_mapkg_dir() {
+    update_mapkg_dir
+    if [ ! -d "$MAPKG_DIR" ]; then
+            print_error "The mapkg directory "$MAPKG_DIR" does not exist. Please create it or set MAPKG_PATH correctly before running this script."
+        exit 1
+    fi
+}
+
+install() {
+	echo "Installing $1"
+    check_mapkg_dir
+}
+
+remove() {
+	echo "Removing $1"
+    check_mapkg_dir
+	# TODO
+}
+
+update() {
+	echo "Updating"
+    check_mapkg_dir
+}
+
+upgrade() {
+    echo "Upgrading $1"
+    check_mapkg_dir
+    # TODO
+}
+
+list() {
+    echo "Listing all the installed packages"
+    check_mapkg_dir
+    # TODO
+}
+
+# Function: print_version
+# Description: Print the version of the script
+# Parameters: None
+# Return: None
+# Exit code: 0
+print_version() {
+    echo "mapkg $VERSION"
+    exit 0
 }
 
 # Function: print_help
@@ -65,7 +134,7 @@ check_dependencies() {
 # Exit code: 0
 print_help() {
 	echo "Usage: $0 [options] [packages]"
-    echo -e ""
+    printf "\n"
     echo "Options:"
     echo "    install <package>: Install the specified package[s]"
     echo "    remove  <package>: Remove the specified package[s]"
@@ -77,26 +146,6 @@ print_help() {
 	exit 0
 }
 
-install() {
-	echo "Installing $1"
-	# TODO
-}
-
-remove() {
-	echo "Removing $1"
-	# TODO
-}
-
-update() {
-	echo "Updating $1"
-	# TODO
-}
-
-upgrade() {
-    echo "Upgrading $1"
-    # TODO
-}
-
 # Function: parse_args
 # Description: Parse the arguments and execute the correct action
 # Parameters:
@@ -105,22 +154,24 @@ upgrade() {
 # Return: None
 # Exit code: None
 parse_args() {
-	if [ $# -lt 2 ]; then
-		print_help
-	fi
-
 	case $1 in
 	install)
-		echo "Installing $2"
+        install "$2"
 		;;
 	remove)
-		echo "Removing $2"
+		remove "$2"
 		;;
 	update)
-		echo "Updating $2"
+		update
 		;;
     upgrade)
-        echo "Upgrading $2"
+        upgrade "$2"
+        ;;
+    list)
+        list
+        ;;
+    version)
+        print_version
         ;;
 	*)
 		print_help

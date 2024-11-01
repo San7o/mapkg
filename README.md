@@ -25,7 +25,7 @@ to your path aswell. That's it.
 
 ## Repository structure
 
-All build scripts (that will be referred to as "maps") are sotred in a
+All build scripts (that will be referred to as **"maps"**) are stored in a
 tree structure in [maps](./maps)
 with the following structure:
 
@@ -44,7 +44,7 @@ For example, `gcc-14.1` would be found in:
       - 14.1.0
 ```
 
-The location of the map is either specified in `MAPKG_PATH/maps` env
+The location of the map is either specified in `MAPKG_PATH`/maps env
 variable or in a default location `/opt/mapkg/maps`.
 
 ## Maps
@@ -59,7 +59,7 @@ about a specific package:
 - metadata: description and other things
 
 When you want to install a package, the instructions on the
-map are executed and the result is saved in `MAPKG_PATH/bin`.
+map are executed and the result is saved in `MAPKG_PATH`/bin.
 
 ## Updates
 
