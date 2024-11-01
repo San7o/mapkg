@@ -88,66 +88,120 @@ assert_mapkg_dir() {
 	fi
 }
 
+# Function: search
+# Description: Search for a package map
+# Parameters:
+# - $1: The package to search
+# Return: None
+# Exit code: 1 if the package is not found
 search() {
-        if [ -z "$1" ]; then
-            print_error "No package specified"
-            exit 1
-        fi
+	if [ -z "$1" ]; then
+		print_error "No package specified"
+		exit 1
+	fi
 
-        echo "Searching for $1"
-        assert_mapkg_dir
+	assert_mapkg_dir
+	echo "Searching for $1"
 
-        map_dirs="$(find "$MAPKG_DIR" -type d -name "*$1*")"
-        if [ -z "$map_dirs" ]; then
-            print_error "The map for $1 was not found in $MAPKG_DIR"
-            exit 1
-        fi
+	map_dirs="$(find "$MAPKG_DIR" -type d -name "*$1*")"
+	if [ -z "$map_dirs" ]; then
+		print_error "The map for $1 was not found in $MAPKG_DIR"
+		exit 1
+	fi
 
-        echo "Found maps:"
-        echo "$map_dirs" | tr ' ' '\n' | while read -r map_dir; do
-        echo "  $(basename $map_dir)"
-        done
+	# Print the found maps
+
+	echo "Found maps:"
+	echo "$map_dirs" | tr ' ' '\n' | while read -r map_dir; do
+		version_dirs=$(find "$map_dir" -type d -not -path "$map_dir")
+		versions=$(echo "$version_dirs" | xargs -n 1 basename | tr '\n' ' ' | sed 's/ $//')
+		echo " - $(basename "$map_dir"): $versions"
+	done
 }
 
-install() {
-    if [ -z "$1" ]; then
-        print_error "No package specified"
-        exit 1
-    fi
-
-	echo "Installing: $1"
+# Function: is_package_installed
+# Description: Check if a package is installed
+# Parameters:
+# - $1: The package to check
+# Return: 1 if the package is installed, 0 otherwise
+is_package_installed() {
 	assert_mapkg_dir
 
-	map_dir="$(find "$MAPKG_DIR" -type d -name "$1")"
-    if [ -z "$map_dir" ]; then
-        print_error "The map for $1 was not found in $MAPKG_DIR Maybe you need to update?"
-        exit 1
-    fi
-    echo "Found map in $map_dir"
+	if [ ! -f "$MAPKG_DIR/installed" ]; then
+		touch "$MAPKG_DIR/installed"
+	fi
 
-    # TODO
+	if ! grep -q "$1" "$MAPKG_DIR/installed"; then
+		return 1
+	fi
+	return 0
+}
+
+# Function: install
+# Description: Install a package
+# Parameters:
+# - $1: The package to install
+# - $2: The optional version of the package to install
+# Return: None
+# Exit code: 1 if the package is not found
+install() {
+	if [ -z "$1" ]; then
+		print_error "No package specified"
+		exit 1
+	fi
+
+	assert_mapkg_dir
+
+	if is_package_installed "$1"; then
+		print_error "The package $1 is already installed"
+		exit 1
+	fi
+
+	echo "Installing: $1"
+
+	map_dir="$(find "$MAPKG_DIR" -type d -name "$1")"
+	if [ -z "$map_dir" ]; then
+		print_error "The map for $1 was not found in $MAPKG_DIR Maybe you need to update?"
+		exit 1
+	fi
+	if [ -n "$2" ]; then # Version specified
+		map_dir="$(find "$map_dir" -type d -name "$2")"
+		if [ -z "$map_dir" ]; then
+			print_error "The map for $1 with version $2 was not found in $MAPKG_DIR"
+			exit 1
+		fi
+	else
+		# Get the latest version (biggest number)
+		map_dir="$(find "$map_dir" -type d -not -path "$map_dir" | head -n 1)"
+	fi
+
+	echo "Found map in $map_dir"
+
+	# TODO: Install the package
+
+	echo "$1 $(basename $map_dir)" >>"$MAPKG_DIR/installed"
 }
 
 remove() {
-	echo "Removing $1"
 	assert_mapkg_dir
+	echo "Removing $1"
 	# TODO
 }
 
 update() {
-	echo "Updating"
 	assert_mapkg_dir
+	echo "Updating"
 }
 
 upgrade() {
-	echo "Upgrading $1"
 	assert_mapkg_dir
+	echo "Upgrading $1"
 	# TODO
 }
 
 list() {
-	echo "Installed packages:"
 	assert_mapkg_dir
+	echo "Installed packages:"
 	# TODO
 }
 
@@ -170,11 +224,11 @@ print_help() {
 	echo "Usage: $0 [options] [packages]"
 	printf "\n"
 	echo "Options:"
-	echo "    install <package>: Install the specified package[s]"
-    echo "    search  <package>: Search if a package map exists"
+	echo "    install <package> <version>: Install the specified package[s]"
+	echo "    search  <package>: Search if a package map exists"
 	echo "    remove  <package>: Remove the specified package[s]"
+	echo "    upgrade <package>: Upgrade the specified package[s]"
 	echo "    update: Update the package list"
-	echo "    upgrade   <package>: Upgrade the specified package[s]"
 	echo "    list: List all the installed packages"
 	echo "    help: Print this help message"
 	echo "    version: Print the version of the script"
@@ -190,11 +244,11 @@ print_help() {
 # Exit code: None
 parse_args() {
 	case $1 in
-    search)
-        search "$2"
-        ;;
+	search)
+		search "$2"
+		;;
 	install)
-		install "$2"
+		install "$2" "$3"
 		;;
 	remove)
 		remove "$2"

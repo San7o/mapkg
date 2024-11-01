@@ -9,11 +9,11 @@ systems.
 Usage: ./mapkg.sh [options] [packages]
 
 Options:
-    install <package>: Install the specified package[s]
+    install <package> <version>: Install the specified package[s]
     search  <package>: Search if a package map exists
     remove  <package>: Remove the specified package[s]
+    upgrade <package>: Upgrade the specified package[s]
     update: Update the package list
-    upgrade   <package>: Upgrade the specified package[s]
     list: List all the installed packages
     help: Print this help message
     version: Print the version of the script
@@ -57,9 +57,9 @@ Each map contains a makefile with the following informations
 about a specific package:
 
 - list of dependencies
-- isntallation instructions
+- installation instructions
 - uninstallation instructions
-- instruction to install documentation (man pages)
+- instructions to install documentation (man pages)
 - metadata: description and other things
 
 When you want to install a package, the instructions on the
