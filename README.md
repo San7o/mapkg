@@ -65,6 +65,8 @@ Each map contains a build script with the following options:
 When you want to install a package, the instructions on the
 map are executed and the result is saved in `MAPKG_PATH`/bin.
 
+Example map: [fastfetch](./maps/util/fastfetch/2.27.1/map.sh)
+
 ## Updates
 
 Maps are updated via git by fetching this repository, either

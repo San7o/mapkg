@@ -1,5 +1,12 @@
 #! /bin/sh
 
+VERSION=""
+MAPKG_DIR=""
+GIT_URL=""
+GIT_USERNAME=""
+NAME=""
+DEPENDENCIES=""
+
 dependencies() {
         echo "Dependencies: ..."
 }
@@ -14,6 +21,10 @@ build() {
 
 install() {
         echo "Installing..."
+}
+
+clean() {
+        echo "Cleaning..."
 }
 
 remove() {
@@ -33,6 +44,9 @@ main() {
                         ;;
                 "install")
                         install
+                        ;;
+                "clean")
+                        clean
                         ;;
                 "remove")
                         remove
