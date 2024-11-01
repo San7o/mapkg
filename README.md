@@ -10,19 +10,10 @@ Options:
     remove  <package>: Remove the specified package[s]
     update: Update the package list
     upgrade   <package>: Upgrade the specified package[s]
+    list: List all the installed packages
     help: Print this help message
     version: Print the version of the script
 ```
-
-## Funcitonalities
-
-mapkg enables you to perform the following operations
-in your system:
-- install a package[s] with Its dependencies
-- uninstall a package[s]
-- update maps
-- upgrade a package[s]
-- list installed packages
 
 ## Installation
 

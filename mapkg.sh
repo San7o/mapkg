@@ -71,6 +71,7 @@ print_help() {
     echo "    remove  <package>: Remove the specified package[s]"
     echo "    update: Update the package list"
     echo "    upgrade   <package>: Upgrade the specified package[s]"
+    echo "    list: List all the installed packages"
     echo "    help: Print this help message"
     echo "    version: Print the version of the script"
 	exit 0
