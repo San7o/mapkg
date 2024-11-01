@@ -177,21 +177,21 @@ install() {
 
 	echo "Found map in $map_dir"
 
-    if [ ! -f "$map_dir/map.sh" ]; then
-        print_error "The build script for $1 was not found in $map_dir"
-        exit 1
-    fi
+	if [ ! -f "$map_dir/map.sh" ]; then
+		print_error "The build script for $1 was not found in $map_dir"
+		exit 1
+	fi
 
-    # Run the download script
-    "$map_dir/map.sh" download
+	# Run the download script
+	"$map_dir/map.sh" download
 
-    # Run the build script
-    "$map_dir/map.sh" build
+	# Run the build script
+	"$map_dir/map.sh" build
 
-    # Run the install script
-    "$map_dir/map.sh" install
+	# Run the install script
+	"$map_dir/map.sh" install
 
-    # Save the installed package
+	# Save the installed package
 	echo "$1 $(basename "$map_dir")" >>"$MAPKG_DIR/installed"
 }
 
@@ -204,8 +204,8 @@ remove() {
 update() {
 	assert_mapkg_dir
 	echo "Updating"
-    # TODO: Pull from git
-    # TODO: Set all maps as executable
+	# TODO: Pull from git
+	# TODO: Set all maps as executable
 }
 
 upgrade() {
@@ -219,7 +219,7 @@ upgrade() {
 list() {
 	assert_mapkg_dir
 	echo "Installed packages:"
-    cat "$MAPKG_DIR/installed"
+	cat "$MAPKG_DIR/installed"
 }
 
 # Function: print_version
