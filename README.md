@@ -2,6 +2,9 @@
 
 A Packet manager for *NIX, via a POSIX compliant `sh` shell script.
 
+Originally created by Giovanni Santini to manage his Linux From Scratch
+systems.
+
 ```
 Usage: ./mapkg.sh [options] [packages]
 

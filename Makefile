@@ -19,3 +19,4 @@ format:
 	@echo "Formatting code..."
 	@shfmt -s mapkg.sh > mapkg.sh.tmp
 	@mv mapkg.sh.tmp mapkg.sh
+	@chmod +x mapkg.sh
