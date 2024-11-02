@@ -185,7 +185,13 @@ install() {
     # Install dependencies
     dependencies=$($map_dir/map.sh dependencies)
     echo "Dependencies: $dependencies"
-    # TODO
+    echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
+        if ! is_package_installed "$dep"; then
+            print_error "The dependency $dep is not installed"
+            exit 1
+            # install "$dep"
+        fi
+    done
 
 	# Run the download script
     if ! "$map_dir/map.sh" download $MAPKG_DIR; then

@@ -58,8 +58,8 @@ Each map contains a build script with the following options:
 - list of dependencies
 - download
 - installation
+- clean the build
 - remove
-- install documentation (man pages)
 - metadata: description and other things
 
 When you want to install a package, the instructions on the
