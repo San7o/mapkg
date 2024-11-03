@@ -13,7 +13,7 @@
 
 check:
 	@echo "Checking code..."
-	@shellcheck mapkg.sh
+	@find maps/ -name 'map.sh' | xargs shellcheck mapkg.sh
 
 format:
 	@echo "Formatting code..."

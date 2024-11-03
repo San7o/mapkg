@@ -183,36 +183,41 @@ install() {
 	fi
 
     # Install dependencies
-    dependencies=$($map_dir/map.sh dependencies)
+    dependencies=$("$map_dir"/map.sh dependencies)
     echo "Dependencies: $dependencies"
+    missing_dependency=false
     echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
         if ! is_package_installed "$dep"; then
             print_error "The dependency $dep is not installed"
+            missing_dependency=true
             exit 1
             # install "$dep"
         fi
-    done
+    done < <(echo "$dependencies" | tr ' ' '\n')
+    if $missing_dependency; then
+        exit 1
+    fi
 
 	# Run the download script
-    if ! "$map_dir/map.sh" download $MAPKG_DIR; then
+    if ! "$map_dir/map.sh" download "$MAPKG_DIR"; then
         print_error "The download script for $1 failed"
         exit 1
     fi
 
 	# Run the build script
-    if ! "$map_dir/map.sh" build $MAPKG_DIR; then
+    if ! "$map_dir/map.sh" build "$MAPKG_DIR"; then
         print_error "The build script for $1 failed"
         exit 1
     fi
 
 	# Run the install script
-    if ! "$map_dir/map.sh" install $MAPKG_DIR; then
+    if ! "$map_dir/map.sh" install "$MAPKG_DIR"; then
         print_error "The install script for $1 failed"
         exit 1
     fi
 
     # Run the clean script
-    if ! "$map_dir/map.sh" clean $MAPKG_DIR; then
+    if ! "$map_dir/map.sh" clean "$MAPKG_DIR"; then
         print_error "The clean script for $1 failed"
         exit 1
     fi

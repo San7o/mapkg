@@ -14,22 +14,22 @@ dependencies() {
 download() {
         echo "Downloading $NAME-$VERSION..."
 
-        if [ -f $MAPKG_DIR/build/$NAME-$VERSION.tar.gz ]; then
+        if [ -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz ]; then
                 echo "Package already downloaded"
-                return
+                exit 0
         fi
 
         URL="https://$GIT_URL/$GIT_USERNAME/$NAME/archive/refs/tags/$VERSION.tar.gz"
 
-        if [ ! -d $MAPKG_DIR/build ]; then
-                mkdir $MAPKG_DIR/build
+        if [ ! -d "$MAPKG_DIR"/build ]; then
+                mkdir "$MAPKG_DIR"/build
         fi
         if command -v curl >/dev/null 2>&1; then
-                curl -s -L -o $MAPKG_DIR/build/$NAME-$VERSION.tar.gz "$URL"
+                curl -s -L -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         elif command -v wget >/dev/null 2>&1; then
-                wget -q -O $MAPKG_DIR/build/$NAME-$VERSION.tar.gz "$URL"
+                wget -q -O "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         elif command -v fetch >/dev/null 2>&1; then # BSD
-                fetch -q -o $MAPKG_DIR/build/$NAME-$VERSION.tar.gz "$URL"
+                fetch -q -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         else
                 echo "Error: either curl, wget or fetch is required to download files" >&2
                 exit 1
@@ -39,34 +39,52 @@ download() {
 
 build() {
         echo "Building..."
-        if [ ! -d $MAPKG_DIR/build ]; then
+        if [ ! -d "$MAPKG_DIR"/build ]; then
                 echo "Error: build directory does not exist" >&2
                 exit 1
         fi
-        if [ ! -f $MAPKG_DIR/build/$NAME-$VERSION.tar.gz ]; then
+        if [ ! -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz ]; then
                 echo "Error: $NAME-$VERSION.tar.gz does not exist" >&2
                 exit 1
         fi
-        tar -xf $MAPKG_DIR/build/$NAME-$VERSION.tar.gz -C $MAPKG_DIR/build
-        cd $MAPKG_DIR/build/$NAME-$VERSION
+        tar -xf "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz -C "$MAPKG_DIR"/build
+        cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || return 1
         mkdir -p build
-        cd build
+        cd build || return 1
         cmake ..
-        cmake --build . --target fastfetch
+        cmake --build . --target fastfetch -j "$(nproc)"
         echo "Done building"
 }
 
 install() {
         echo "Installing..."
+        if [ ! -d "$MAPKG_DIR"/build ]; then
+                echo "Error: build directory does not exist" >&2
+                exit 1
+        fi
+        if [ ! -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build/"$NAME" ]; then
+                echo "Error: $NAME does not exist" >&2
+                exit 1
+        fi
+        if [ ! -d "$MAPKG_DIR"/bin ]; then
+                mkdir "$MAPKG_DIR"/bin
+        fi
+        cp "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build/"$NAME" "$MAPKG_DIR"/bin/"$NAME"
 }
 
 clean() {
         echo "Cleaning..."
-        rm -rf $MAPKG_DIR/build
+        rm -rf "$MAPKG_DIR"/build/"$NAME"-"$VERSION"
+        rm -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz
 }
 
 remove() {
         echo "Removing..."
+        if [ ! -f "$MAPKG_DIR"/build/"$NAME" ]; then
+                echo "Error: $NAME is not installed" >&2
+                exit 1
+        fi
+        rm -rf "{$MAPKG_DIR:?}/bin/$NAME"
 }
 
 main() {
@@ -106,4 +124,4 @@ main() {
         esac
 }
 
-main $@
+main "$@"
