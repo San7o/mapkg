@@ -184,6 +184,7 @@ install() {
 
     # Install dependencies
     dependencies=$("$map_dir"/map.sh dependencies)
+    # TODO Recursively resolve dependencies
     echo "Dependencies: $dependencies"
     missing_dependency=false
     echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
