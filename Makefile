@@ -20,3 +20,8 @@ format:
 	@shfmt -s mapkg.sh > mapkg.sh.tmp
 	@mv mapkg.sh.tmp mapkg.sh
 	@chmod +x mapkg.sh
+
+install:
+	[ -f /usr/bin/mapkg ] && sudo rm /usr/bin/mapkg || echo ""
+	chmod +x ${PWD}/mapkg.sh
+	sudo ln -s ${PWD}/mapkg.sh /usr/bin/mapkg

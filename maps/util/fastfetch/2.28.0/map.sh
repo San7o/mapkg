@@ -24,11 +24,14 @@ download() {
         if [ ! -d "$MAPKG_DIR"/build ]; then
                 mkdir "$MAPKG_DIR"/build
         fi
-        if command -v curl >/dev/null 2>&1; then
-                curl -s -L -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
-        elif command -v wget >/dev/null 2>&1; then
+        if command -v wget >/dev/null 2>&1; then
+	        echo "Downloading with wget"
                 wget -q -O "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
+        elif command -v curl >/dev/null 2>&1; then
+	        echo "Downloading with curl"
+                curl -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         elif command -v fetch >/dev/null 2>&1; then # BSD
+	        echo "Downloading with fetch"
                 fetch -q -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         else
                 echo "Error: either curl, wget or fetch is required to download files" >&2
