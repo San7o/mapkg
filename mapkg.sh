@@ -103,7 +103,7 @@ search() {
 	assert_mapkg_dir
 	echo "Searching for $1"
 
-	map_dirs="$(find "$MAPKG_DIR" -type d -name "*$1*")"
+	map_dirs="$(find "$MAPKG_DIR"/maps -maxdepth 2 -type d -name "*$1*")"
 	if [ -z "$map_dirs" ]; then
 		print_error "The map for $1 was not found in $MAPKG_DIR"
 		exit 1
@@ -159,7 +159,7 @@ install() {
 
 	echo "Installing: $1"
 
-	map_dir="$(find "$MAPKG_DIR" -type d -name "$1")"
+	map_dir="$(find "$MAPKG_DIR"/maps -maxdepth 2 -type d -name "$1")"
 	if [ -z "$map_dir" ]; then
 		print_error "The map for $1 was not found in $MAPKG_DIR Maybe you need to update?"
 		exit 1
