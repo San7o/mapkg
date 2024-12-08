@@ -82,6 +82,24 @@ install() {
 	fi
         cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || return 1
 	./b2 install threading=multi link=shared
+
+	sudo touch /lib/pkgconfig/boost.pc
+	sudo echo "
+# Package Information for pkg-config \
+\
+# Path to where Boost is installed \
+prefix=/usr/local \
+# Path to where libraries are \
+libdir=${prefix}/lib \
+# Path to where include files are \
+includedir=${prefix}/include/boost\
+
+Name: Boost \
+Description: Boost provides free peer-reviewed portable C++ source libraries \
+Version: 1.70.0 \
+Libs: -L${libdir} -lboost_filesystem -lboost_system \
+Cflags: -isystem ${includedir}" > /lib/pkgconfig/boost.pc
+
 }
 
 clean() {
