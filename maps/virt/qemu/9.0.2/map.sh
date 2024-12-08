@@ -113,7 +113,7 @@ remove() {
                 echo "Error: $NAME is not installed" >&2
                 exit 1
         fi
-        rm -rf "{$MAPKG_DIR:?}/bin/$NAME"
+        rm -rf "{$MAPKG_DIR:?}/bin/$NAME"*
 }
 
 main() {
