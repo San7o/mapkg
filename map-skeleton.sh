@@ -2,61 +2,61 @@
 
 set -e
 
+NAME=""
 VERSION=""
 MAPKG_DIR=""
 GIT_URL=""
 GIT_USERNAME=""
-NAME=""
 DEPENDENCIES=""
 
 dependencies() {
-        echo "Dependencies: ..."
+    echo "$DEPENDENCIES"
 }
 
 download() {
-        echo "Downloading..."
+    echo "Downloading $NAME $VERSION"
 }
 
 build() {
-        echo "Building..."
+    echo "Building $NAME $VERSION"
 }
 
 install() {
-        echo "Installing..."
+    echo "Installing $NAME $VERSION"
 }
 
 clean() {
-        echo "Cleaning..."
+    echo "Cleaning $NAME $VERSION"
 }
 
 remove() {
-        echo "Removing..."
+    echo "Removing $NAME $VERSION"
 }
 
 main() {
-        case $1 in
-                "dependencies")
-                        dependencies
-                        ;;
-                "download")
-                        download
-                        ;;
-                "build")
-                        build
-                        ;;
-                "install")
-                        install
-                        ;;
-                "clean")
-                        clean
-                        ;;
-                "remove")
-                        remove
-                        ;;
-                *)
-                        echo "Command not recognized" >&2
-                        ;;
-        esac
+    case $1 in
+        "dependencies")
+            dependencies
+            ;;
+        "download")
+            download
+            ;;
+        "build")
+            build
+            ;;
+        "install")
+            install
+            ;;
+        "clean")
+            clean
+            ;;
+        "remove")
+            remove
+            ;;
+        *)
+            echo "Command not recognized" >&2
+            ;;
+    esac
 }
 
 main $@

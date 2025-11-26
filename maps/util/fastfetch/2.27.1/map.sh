@@ -1,7 +1,14 @@
 #! /bin/sh
 
+#
+# Fastfetch
+# =========
+#
+
+set -e
+
 VERSION="2.27.1"
-MAPKG_DIR="/opt/mapkg"
+MAPKG_DIR="$HOME/mapkg"
 GIT_URL="github.com"
 GIT_USERNAME="fastfetch-cli"
 NAME="fastfetch"
@@ -12,7 +19,7 @@ dependencies() {
 }
 
 download() {
-    echo "Downloading $NAME-$VERSION..."
+    echo "Downloading $NAME $VERSION"
 
     if [ -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz ]; then
         echo "Package already downloaded"
@@ -24,21 +31,26 @@ download() {
     if [ ! -d "$MAPKG_DIR"/build ]; then
         mkdir "$MAPKG_DIR"/build
     fi
-    if command -v curl >/dev/null 2>&1; then
-        curl -s -L -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
-    elif command -v wget >/dev/null 2>&1; then
+    if command -v wget >/dev/null 2>&1; then
+	      echo "Downloading with wget"
         wget -q -O "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
+    elif command -v curl >/dev/null 2>&1; then
+	      echo "Downloading with curl"
+        curl -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
     elif command -v fetch >/dev/null 2>&1; then # BSD
+	      echo "Downloading with fetch"
         fetch -q -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
     else
         echo "Error: either curl, wget or fetch is required to download files" >&2
         exit 1
     fi
+    
     echo "Downloaded $NAME-$VERSION to $MAPKG_DIR/build/$NAME-$VERSION.tar.gz"
 }
 
 build() {
-    echo "Building..."
+    echo "Building $NAME $VERSION"
+    
     if [ ! -d "$MAPKG_DIR"/build ]; then
         echo "Error: build directory does not exist" >&2
         exit 1
@@ -53,11 +65,11 @@ build() {
     cd build || return 1
     cmake ..
     cmake --build . --target fastfetch -j "$(nproc)"
-    echo "Done building"
 }
 
 install() {
-    echo "Installing..."
+    echo "Installing $NAME $VERSION"
+    
     if [ ! -d "$MAPKG_DIR"/build ]; then
         echo "Error: build directory does not exist" >&2
         exit 1
@@ -73,18 +85,20 @@ install() {
 }
 
 clean() {
-    echo "Cleaning..."
+    echo "Cleaning $NAME $VERSION"
+    
     rm -rf "$MAPKG_DIR"/build/"$NAME"-"$VERSION"
     rm -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz
 }
 
 remove() {
-    echo "Removing..."
-    if [ ! -f "$MAPKG_DIR"/build/"$NAME" ]; then
+    echo "Removing $NAME $VERSION"
+    
+    if [ ! -f "$MAPKG_DIR"/bin/"$NAME" ]; then
         echo "Error: $NAME is not installed" >&2
         exit 1
     fi
-    rm -rf "{$MAPKG_DIR:?}/bin/$NAME"
+    rm -rf "$MAPKG_DIR"/bin/"$NAME"
 }
 
 main() {

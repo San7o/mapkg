@@ -1,6 +1,7 @@
 #! /bin/sh
-
-# ======================================================
+#
+# mapkg.sh
+# ========
 #
 # The mapkg package manager script
 #
@@ -11,15 +12,15 @@
 # Usage:
 # - ./mapkg.sh [options] [packages]
 #
-# ======================================================
 
 # Current version of the script
 VERSION="0.1.0"
-# Dependencies needed to run this script
+# Dependencies needed to run this script, and other assumed programs
 BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch sort tar cmake which"
 # Default mapkg directory
 MAPKG_DIR="$HOME/mapkg"
 
+# Exit on error
 set -e
 
 # Function: print_error
@@ -175,55 +176,100 @@ install() {
 		exit 1
 	fi
 
-    # Install dependencies
-    dependencies=$("$map_dir"/map.sh dependencies)
-    # TODO Recursively resolve dependencies
-    echo "Dependencies: $dependencies"
-    missing_dependency=false
-    echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
-        if [ -n "$dep" ] && ! is_package_installed "$dep"; then
-            print_error "The dependency $dep is not installed"
-            missing_dependency=true
-            exit 1
-            # install "$dep"
-        fi
-    done < <(echo "$dependencies" | tr ' ' '\n')
-    if $missing_dependency; then
-        exit 1
-    fi
+  # Install dependencies
+  dependencies=$("$map_dir"/map.sh dependencies)
+  # TODO Recursively resolve dependencies
+  echo "Dependencies: $dependencies"
+  missing_dependency=false
+  echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
+      if [ -n "$dep" ] && ! is_package_installed "$dep"; then
+          print_error "The dependency $dep is not installed"
+          missing_dependency=true
+          exit 1
+          # install "$dep"
+      fi
+  done < <(echo "$dependencies" | tr ' ' '\n')
+  if $missing_dependency; then
+      exit 1
+  fi
 
-	# Run the download script
-    if ! "$map_dir/map.sh" download "$MAPKG_DIR"; then
-        print_error "The download script for $1 failed"
-        exit 1
-    fi
+	# Run map functions
+  
+  if ! "$map_dir/map.sh" download "$MAPKG_DIR"; then
+      print_error "The download script for $1 failed"
+      exit 1
+  fi
 
-	# Run the build script
-    if ! "$map_dir/map.sh" build "$MAPKG_DIR"; then
-        print_error "The build script for $1 failed"
-        exit 1
-    fi
+  if ! "$map_dir/map.sh" build "$MAPKG_DIR"; then
+      print_error "The build script for $1 failed"
+      exit 1
+  fi
 
-	# Run the install script
-    if ! "$map_dir/map.sh" install "$MAPKG_DIR"; then
-        print_error "The install script for $1 failed"
-        exit 1
-    fi
+  if ! "$map_dir/map.sh" install "$MAPKG_DIR"; then
+      print_error "The install script for $1 failed"
+      exit 1
+  fi
 
-    # Run the clean script
-    if ! "$map_dir/map.sh" clean "$MAPKG_DIR"; then
-        print_error "The clean script for $1 failed"
-        exit 1
-    fi
+  if ! "$map_dir/map.sh" clean "$MAPKG_DIR"; then
+      print_error "The clean script for $1 failed"
+      exit 1
+  fi
 
 	# Save the installed package
 	echo "$1 $(basename "$map_dir")" >>"$MAPKG_DIR/installed"
+
+  echo "$1 succesfully installed!"
 }
 
 remove() {
 	assert_mapkg_dir
-	echo "Removing $1"
-	# TODO
+
+	if [ -z "$1" ]; then
+		print_error "No package specified"
+		exit 1
+	fi
+
+	if ! is_package_installed "$1"; then
+		print_error "The package $1 is not installed"
+		exit 1
+	fi
+
+  name="$1"
+  version=""
+	map_dir="$(find "$MAPKG_DIR"/maps -maxdepth 2 -type d -name "$1")"
+	if [ -z "$map_dir" ]; then
+		print_error "The map for $1 was not found in $MAPKG_DIR Maybe you need to update?"
+		exit 1
+	fi
+	if [ -n "$2" ]; then # Version specified
+		map_dir="$(find "$map_dir" -type d -name "$2")"
+		if [ -z "$map_dir" ]; then
+			print_error "The map for $1 with version $2 was not found in $MAPKG_DIR"
+			exit 1
+		fi
+    version="$2"
+	else
+		# Get the latest version (biggest number)
+		map_dir="$(find "$map_dir" -type d -not -path "$map_dir" | sort -r | head -n 1)"
+	fi
+
+  echo "Removing $name $version"
+
+	echo "Found map in $map_dir"
+
+	if [ ! -f "$map_dir/map.sh" ]; then
+		print_error "Map for $1 was not found in $map_dir"
+		exit 1
+	fi
+
+  if ! "$map_dir/map.sh" remove "$MAPKG_DIR"; then
+      print_error "Removing $1 failed"
+      exit 1
+  fi
+
+  sed -i "/^$name $version/d" "$MAPKG_DIR"/installed
+
+  echo "$1 succesfully removed"
 }
 
 update() {
