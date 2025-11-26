@@ -2,12 +2,13 @@
 
 set -e
 
-VERSION="1.86.0"
+VERSION="2.55.1"
 MAPKG_DIR="/opt/mapkg"
 GIT_URL="github.com"
-GIT_USERNAME="boostorg"
-NAME="boost"
-DEPENDENCIES="tar which"
+GIT_USERNAME="fastfetch-cli"
+NAME="fastfetch"
+#DEPENDENCIES="tar cmake"
+DEPENDENCIES=""
 
 dependencies() {
         echo "$DEPENDENCIES"
@@ -21,21 +22,20 @@ download() {
                 exit 0
         fi
 
-        URL="https://$GIT_URL/$GIT_USERNAME/$NAME/releases/download/$NAME-$VERSION/$NAME-$VERSION-b2-nodocs.tar.gz"
-	PATCH_URL="https://www.linuxfromscratch.org/patches/blfs/12.2/boost-1.86.0-upstream_fixes-1.patch"
+        URL="https://$GIT_URL/$GIT_USERNAME/$NAME/archive/refs/tags/$VERSION.tar.gz"
 
         if [ ! -d "$MAPKG_DIR"/build ]; then
                 mkdir "$MAPKG_DIR"/build
         fi
         if command -v wget >/dev/null 2>&1; then
+	        echo "Downloading with wget"
                 wget -q -O "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
-		wget -q -O "$MAPKG_DIR"/build/boost-1.86.0-upstream_fixes-1.patch "$PATCH_URL"
-          elif command -v curl >/dev/null 2>&1; then
-                curl -s -L -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
-		wget -s -L -o "$MAPKG_DIR"/build/boost-1.86.0-upstream_fixes-1.patch "$PATCH_URL"
+        elif command -v curl >/dev/null 2>&1; then
+	        echo "Downloading with curl"
+                curl -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
         elif command -v fetch >/dev/null 2>&1; then # BSD
+	        echo "Downloading with fetch"
                 fetch -q -o "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz "$URL"
-		fetch -q -o "$MAPKG_DIR"/build/boost-1.86.0-upstream_fixes-1.patch "$PATCH_URL"
         else
                 echo "Error: either curl, wget or fetch is required to download files" >&2
                 exit 1
@@ -55,17 +55,10 @@ build() {
         fi
         tar -xf "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz -C "$MAPKG_DIR"/build
         cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || return 1
-
-	patch -Np1 -i ../boost-1.86.0-upstream_fixes-1.patch
-	case $(uname -m) in
-	    i?86)
-		sed -e "s/defined(__MINGW32__)/& || defined(__i386__)/" \
-		    -i ./libs/stacktrace/src/exception_headers.h ;;
-	esac
-
-	./bootstrap.sh --prefix=/$MAPKG_DIR --with-python=python3
-	./b2 stage -j$(nproc) threading=multi link=shared
-	
+        mkdir -p build
+        cd build || return 1
+        cmake ..
+        cmake --build . --target fastfetch -j "$(nproc)"
         echo "Done building"
 }
 
@@ -75,40 +68,20 @@ install() {
                 echo "Error: build directory does not exist" >&2
                 exit 1
         fi
+        if [ ! -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build/"$NAME" ]; then
+                echo "Error: $NAME does not exist" >&2
+                exit 1
+        fi
         if [ ! -d "$MAPKG_DIR"/bin ]; then
                 mkdir "$MAPKG_DIR"/bin
         fi
-	if [ ! -d "$MAPKG_DIR"/build/"$NAME"-"$VERSION" ]; then
-                echo "Error: project directory does not exist" >&2
-                exit 1
-	fi
-        cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || return 1
-	./b2 install threading=multi link=shared
-
-	sudo touch /lib/pkgconfig/boost.pc
-	sudo echo "
-# Package Information for pkg-config \
-\
-# Path to where Boost is installed \
-prefix=/usr/local \
-# Path to where libraries are \
-libdir=${prefix}/lib \
-# Path to where include files are \
-includedir=${prefix}/include/boost\
-
-Name: Boost \
-Description: Boost provides free peer-reviewed portable C++ source libraries \
-Version: 1.70.0 \
-Libs: -L${libdir} -lboost_filesystem -lboost_system \
-Cflags: -isystem ${includedir}" > /lib/pkgconfig/boost.pc
-
+        cp "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build/"$NAME" "$MAPKG_DIR"/bin/"$NAME"
 }
 
 clean() {
         echo "Cleaning..."
         rm -rf "$MAPKG_DIR"/build/"$NAME"-"$VERSION"
         rm -f "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.gz
-	rm -f "$MAPKG_DIR"/build/boost-1.86.0-upstream_fixes-1.patch
 }
 
 remove() {

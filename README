@@ -1,0 +1,77 @@
+mapkg
+=====
+
+A Packet manager for *NIX, via a POSIX compliant `sh` shell script.
+
+Author:  Giovanni Santini
+Email:   giovanni.santini@proton.me
+License: GPLv3
+
+
+Usage
+-----
+
+  Usage: ./mapkg.sh [options] [packages]
+
+  Options:
+      install <package> <version>: Install the specified package[s]
+      search  <package>: Search if a package map exists
+      remove  <package>: Remove the specified package[s]
+      upgrade <package>: Upgrade the specified package[s]
+      update: Update the package list
+      list: List all the installed packages
+      help: Print this help message
+      version: Print the version of the script
+
+
+Installation
+------------
+
+Clone this repo in your filesystem and set the environment variable
+`MAPKG_PATH` to that position (by default, "~/mapkg" is used). You will use
+`mapkg.sh` to manage your packages, you should add it's location to your path
+or copy/move the script in `/usr/bin`.  The packages will be installed in
+`MAPKG_PATH/bin` so you should add this to your path aswell. That's it.
+
+
+Repository structure
+--------------------
+
+All build scripts (that will be referred to as **"maps"**) are stored in a
+tree structure under `maps/` with the following structure:
+
+  - maps
+     - category
+        - package
+           - version
+
+For example, `gcc-14.1` would be found in:
+
+  - maps
+    - dev
+      - gcc
+        - 14.1.0
+
+The location of the map is `MAPKG_PATH`/maps. By default this is `~/mapkg/maps`.
+
+
+Maps
+----
+
+Each map contains an sh script which implements the following functionalities:
+
+- list of dependencies
+- download
+- installation
+- clean the build
+- remove
+- metadata: description and other things
+
+The output of the installation can be found in `MAPKG_PATH`/bin.
+
+
+Updates
+-------
+
+Maps are updated via git by fetching this repository, either
+using a known tag or from master branch.

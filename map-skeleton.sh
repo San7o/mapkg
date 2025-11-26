@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 VERSION=""
 MAPKG_DIR=""
 GIT_URL=""

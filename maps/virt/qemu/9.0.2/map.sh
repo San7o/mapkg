@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 VERSION="9.0.2"
 MAPKG_DIR="/opt/mapkg"
 NAME="qemu"

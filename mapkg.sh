@@ -2,17 +2,11 @@
 
 # ======================================================
 #
-# The mapkg package manager script, developed by
-# Giovanni Santini to maintain the software on
-# his LFS (Linux From Scratch) systems.
+# The mapkg package manager script
 #
-# Date: 2024-11-01
+# Author: Giovanni Santini
 # License: GPLv3
 # Version: 0.1.0
-# Author: Giovanni Santini
-#
-# Dependencies:
-#  - make
 #
 # Usage:
 # - ./mapkg.sh [options] [packages]
@@ -22,9 +16,11 @@
 # Current version of the script
 VERSION="0.1.0"
 # Dependencies needed to run this script
-BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch"
+BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch sort"
 # Default mapkg directory
-MAPKG_DIR="/opt/mapkg"
+MAPKG_DIR="$HOME/mapkg"
+
+set -e
 
 # Function: print_error
 # Description: Print an error message to the standard error
@@ -42,10 +38,7 @@ print_error() {
 # - $1: The program to check
 # Return: true if the program is installed, false otherwise
 is_installed() {
-	if ! command "$1" >/dev/null 2>&1; then
-		return 1
-	fi
-	return 0
+    command -v "$1" >/dev/null 2>&1
 }
 
 # Function: check_dependencies
@@ -172,7 +165,7 @@ install() {
 		fi
 	else
 		# Get the latest version (biggest number)
-		map_dir="$(find "$map_dir" -type d -not -path "$map_dir" | head -n 1)"
+		map_dir="$(find "$map_dir" -type d -not -path "$map_dir" | sort -r | head -n 1)"
 	fi
 
 	echo "Found map in $map_dir"
@@ -188,7 +181,7 @@ install() {
     echo "Dependencies: $dependencies"
     missing_dependency=false
     echo "$dependencies" | tr ' ' '\n' | while read -r dep; do
-        if ! is_package_installed "$dep"; then
+        if [ -n "$dep" ] && ! is_package_installed "$dep"; then
             print_error "The dependency $dep is not installed"
             missing_dependency=true
             exit 1
