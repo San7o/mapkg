@@ -16,7 +16,7 @@
 # Current version of the script
 VERSION="0.1.0"
 # Dependencies needed to run this script
-BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch sort"
+BASE_DEPENDENCIES="echo basename find grep head sed xargs command cat touch sort tar cmake which"
 # Default mapkg directory
 MAPKG_DIR="$HOME/mapkg"
 

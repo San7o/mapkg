@@ -7,7 +7,6 @@ MAPKG_DIR="/opt/mapkg"
 GIT_URL="github.com"
 GIT_USERNAME="fastfetch-cli"
 NAME="fastfetch"
-#DEPENDENCIES="tar cmake"
 DEPENDENCIES=""
 
 dependencies() {
