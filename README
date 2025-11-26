@@ -28,16 +28,19 @@ Installation
 ------------
 
 Clone this repo in your filesystem and set the environment variable
-`MAPKG_PATH` to that position (by default, "~/mapkg" is used). You will use
-`mapkg.sh` to manage your packages, you should add it's location to your path
-or copy/move the script in `/usr/bin`.  The packages will be installed in
-`MAPKG_PATH/bin` so you should add this to your path aswell. That's it.
+`MAPKG_PATH` to that position (by default, "$HOME/mapkg" is used). You
+will use `mapkg.sh` to manage your packages, you should add it's
+location to your path. The packages will be installed in
+`MAPKG_PATH/bin` so you should add this to your path aswell:
+
+   export MAPKG_PATH="$HOME"
+   export PATH="$MAPKG_PATH/mapkg:$MAPKG_PATH/mapkg/bin:$PATH"
 
 
 Repository structure
 --------------------
 
-All build scripts (that will be referred to as **"maps"**) are stored in a
+All build scripts (that will be referred to as `maps`) are stored in a
 tree structure under `maps/` with the following structure:
 
   - maps
