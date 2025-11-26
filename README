@@ -33,8 +33,8 @@ will use `mapkg.sh` to manage your packages, you should add it's
 location to your path. The packages will be installed in
 `MAPKG_PATH/bin` so you should add this to your path aswell:
 
-   export MAPKG_PATH="$HOME"
-   export PATH="$MAPKG_PATH/mapkg:$MAPKG_PATH/mapkg/bin:$PATH"
+   export MAPKG_PATH="$HOME/mapkg"
+   export PATH="$MAPKG_PATH:$MAPKG_PATH/bin:$PATH"
 
 
 Repository structure
