@@ -3,4 +3,7 @@ build
 installed
 include/
 lib/
+lib64
+libexec
+share
 *~
