@@ -188,7 +188,7 @@ install() {
           exit 1
           # install "$dep"
       fi
-  done < <(echo "$dependencies" | tr ' ' '\n')
+  done
   if $missing_dependency; then
       exit 1
   fi

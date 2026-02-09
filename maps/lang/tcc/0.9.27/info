@@ -1,0 +1,4 @@
+Package: tcc
+Version: 0.9.27
+Description: Small C compiler.
+License: LGPL

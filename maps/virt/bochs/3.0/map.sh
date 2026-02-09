@@ -2,12 +2,11 @@
 
 set -e
 
-NAME="qemu"
-VERSION="9.0.2"
+NAME="bochs"
+VERSION="3.0"
 MAPKG_DIR="$HOME/mapkg"
-#DEPENDENCIES="glib pixaman alsa-lib dlc libslirp sdl2 ninja"
 DEPENDENCIES=
-URL="https://download.qemu.org/$NAME-$VERSION.tar.xz"
+URL="https://github.com/bochs-emu/Bochs/archive/refs/tags/REL_3_0_FINAL.tar.gz"
 
 dependencies() {
     echo "$DEPENDENCIES"
@@ -53,24 +52,13 @@ build() {
     fi
 
     tar -xf "$MAPKG_DIR"/build/"$NAME"-"$VERSION".tar.xz -C "$MAPKG_DIR"/build
-    cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || return 1
+    mv "$MAPKG_DIR"/build/Bochs-REL_3_0_FINAL "$MAPKG_DIR"/build/"$NAME"-"$VERSION" || :
+    cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/bochs || return 1
 
-    QEMU_ARCH=x86_64-softmmu,aarch64-softmmu
-    
 	  mkdir -vp build
 	  cd build
 
-	  ../configure --prefix=$MAPKG_DIR         \
-                 --sysconfdir=/etc           \
-		             --localstatedir=/var        \
-	               --target-list=$QEMU_ARCH    \
-		             --audio-drv-list=alsa       \
-		             --disable-pa                \
-		             --enable-slirp              \
-                 --enable-spice              \
-                 --enable-gtk                \
-		             --enable-sdl
-    unset QEMU_ARCH
+	  ../configure --prefix=$MAPKG_DIR
 	  make -j$(nproc)
 	  
 	  echo "Done building"
@@ -87,7 +75,7 @@ install() {
         exit 1
     fi
 
-    cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build || return 1
+    cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/bochs/build || return 1
 
 	  make install
 
