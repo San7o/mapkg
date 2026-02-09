@@ -58,8 +58,29 @@ build() {
 	  mkdir -vp build
 	  cd build
 
-	  ../configure --prefix=$MAPKG_DIR
-	  make -j$(nproc)
+    ../configure --prefix=$MAPKG_DIR \
+                 --enable-smp \
+                 --enable-cpu-level=6 \
+                 --enable-all-optimizations \
+                 --enable-x86-64 \
+                 --enable-pci \
+                 --enable-avx \
+                 --enable-vmx \
+                 --enable-evex \
+                 --enable-debugger \
+                 --enable-disasm \
+                 --enable-debugger-gui \
+                 --enable-logging \
+                 --enable-fpu \
+                 --enable-3dnow \
+                 --enable-sb16=dummy \
+                 --enable-cdrom \
+                 --enable-x86-debugger \
+                 --enable-iodebug \
+                 --disable-plugins \
+                 --disable-docbook \
+                 --with-x --with-x11 --with-term --with-sdl2
+	   make -j$(nproc)
 	  
 	  echo "Done building"
 }
@@ -70,25 +91,14 @@ install() {
         echo "Error: build directory does not exist" >&2
         exit 1
     fi
-    if [ ! -d "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/build ]; then
+    if [ ! -d "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/bochs/build ]; then
         echo "Error: $NAME does not exist" >&2
         exit 1
     fi
 
     cd "$MAPKG_DIR"/build/"$NAME"-"$VERSION"/bochs/build || return 1
 
-	  make install
-
-	  if [ -f /usr/libexec/quemu-bridge-helper ]; then
-	      chgrp kvm  /usr/libexec/qemu-bridge-helper
-	      chmod 4750 /usr/libexec/qemu-bridge-helper
-	  fi
-
-	  echo "$NAME succesfully installed. Some actions are required from the user
-              for additional functionalities."
-	  echo " - If you want users other that root to run qemu you need to add them
-                 to the kvm group:"
-	  echo "        usermod -a -G kvm <username>"
+    make install
 }
 
 clean() {
