@@ -67,6 +67,7 @@ build() {
 		             --audio-drv-list=alsa       \
 		             --disable-pa                \
 		             --enable-slirp              \
+                     --enable-capstone           \
                  --enable-spice              \
                  --enable-gtk                \
 		             --enable-sdl
