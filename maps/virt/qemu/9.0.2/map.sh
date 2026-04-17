@@ -62,15 +62,16 @@ build() {
 
 	  ../configure --prefix=$MAPKG_DIR         \
                  --sysconfdir=/etc           \
-		             --localstatedir=/var        \
-	               --target-list=$QEMU_ARCH    \
-		             --audio-drv-list=alsa       \
-		             --disable-pa                \
-		             --enable-slirp              \
-                     --enable-capstone           \
+                 --localstatedir=/var        \
+                 --target-list=$QEMU_ARCH    \
+                 --audio-drv-list=alsa       \
+                 --disable-pa                \
+                 --enable-slirp              \
+                 --enable-capstone           \
                  --enable-spice              \
                  --enable-gtk                \
-		             --enable-sdl
+                 --enable-kvm                \
+                 --enable-sdl
     unset QEMU_ARCH
 	  make -j$(nproc)
 	  
