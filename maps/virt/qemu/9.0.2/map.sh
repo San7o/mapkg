@@ -60,7 +60,7 @@ build() {
 	  mkdir -vp build
 	  cd build
 
-	  ../configure --prefix=$MAPKG_DIR         \
+	  ../configure --prefix=$MAPKG_DIR       \
                  --sysconfdir=/etc           \
                  --localstatedir=/var        \
                  --target-list=$QEMU_ARCH    \
@@ -68,6 +68,8 @@ build() {
                  --disable-pa                \
                  --enable-slirp              \
                  --enable-capstone           \
+                 --enable-opengl             \
+                 --enable-virglrenderer      \
                  --enable-spice              \
                  --enable-gtk                \
                  --enable-kvm                \
